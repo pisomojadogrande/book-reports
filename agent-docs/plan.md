@@ -115,11 +115,11 @@ Notes:
 
 **Script:** `src/build.py` — run every time `books.json` changes.
 
-- [ ] Write Jinja2 HTML template
-- [ ] Write CSS (card layout, typography, year nav, lasting-impression styling, responsive)
-- [ ] Implement build script: reads `books.json`, renders template, copies covers to `site/`
-- [ ] Verify local preview looks correct in browser
-- [ ] Iterate on design until satisfied
+- [x] Write Jinja2 HTML template
+- [x] Write CSS (card layout, typography, year nav, lasting-impression styling, responsive)
+- [x] Implement build script: reads `books.json`, renders template, copies covers to `site/`
+- [x] Verify local preview looks correct in browser
+- [x] Iterate on design until satisfied
 
 Design spec:
 - **Card layout:** cover image left (uniform 120×180px, letterboxed), title/author/review right

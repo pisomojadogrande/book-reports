@@ -1,0 +1,97 @@
+"""
+build.py — generate site/ from data/books.json and src/templates/.
+
+Run:
+    python src/build.py
+"""
+
+import json
+import shutil
+from collections import defaultdict
+from datetime import date
+from pathlib import Path
+
+from jinja2 import Environment, FileSystemLoader
+
+ROOT = Path(__file__).parent.parent
+DATA_FILE = ROOT / "data" / "books.json"
+TEMPLATES_DIR = Path(__file__).parent / "templates"
+SITE_DIR = ROOT / "site"
+IMAGES_SRC = ROOT / "images" / "covers"
+IMAGES_DEST = SITE_DIR / "covers"
+
+MONTH_ORDER = {
+    "January": 1, "February": 2, "March": 3, "April": 4,
+    "May": 5, "June": 6, "July": 7, "August": 8,
+    "September": 9, "October": 10, "November": 11, "December": 12,
+}
+
+
+def group_books(books):
+    """
+    Return a list of (year, [(period_label, [books])]) sorted newest first.
+    period_label is "Month Year" for 2022+, or just the year string for earlier.
+    """
+    # Bucket by (year, month)
+    buckets = defaultdict(list)
+    for book in books:
+        key = (book["year"], book.get("month"))
+        buckets[key].append(book)
+
+    # Sort keys: year desc, month desc
+    def sort_key(k):
+        year, month = k
+        return (-year, -(MONTH_ORDER.get(month, 0)))
+
+    sorted_keys = sorted(buckets.keys(), key=sort_key)
+
+    # Group by year
+    years_seen = []
+    by_year = defaultdict(list)
+    for year, month in sorted_keys:
+        if year not in years_seen:
+            years_seen.append(year)
+        label = f"{month} {year}" if month else str(year)
+        by_year[year].append((label, buckets[(year, month)]))
+
+    return [(y, by_year[y]) for y in years_seen]
+
+
+def main():
+    books = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+
+    # Build grouped structure for template
+    grouped = group_books(books)
+    years = [y for y, _ in grouped]
+
+    # Set up Jinja2
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
+    template = env.get_template("index.html.j2")
+
+    # Render
+    html = template.render(
+        grouped=grouped,
+        years=years,
+        updated=date.today().strftime("%B %Y"),
+    )
+
+    # Write output
+    SITE_DIR.mkdir(exist_ok=True)
+    (SITE_DIR / "index.html").write_text(html, encoding="utf-8")
+
+    # Copy CSS
+    shutil.copy(TEMPLATES_DIR / "style.css", SITE_DIR / "style.css")
+
+    # Copy cover images
+    if IMAGES_SRC.exists():
+        IMAGES_DEST.mkdir(exist_ok=True)
+        for img in IMAGES_SRC.glob("*.png"):
+            shutil.copy(img, IMAGES_DEST / img.name)
+
+    print(f"Built {len(books)} books → {SITE_DIR / 'index.html'}")
+    covers_copied = len(list(IMAGES_DEST.glob("*.png"))) if IMAGES_DEST.exists() else 0
+    print(f"Copied {covers_copied} cover images")
+
+
+if __name__ == "__main__":
+    main()

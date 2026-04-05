@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What I've Read</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="year-nav">
+  <span class="nav-label">Jump to</span>
+  {% for year in years %}
+  <a href="#year-{{ year }}">{{ year }}</a>
+  {% endfor %}
+</nav>
+
+<div class="page-wrap">
+
+  <header class="site-header">
+    <h1>What I've Read</h1>
+    <p class="intro">
+      Books I've read since around 2019 — mostly nonfiction, mostly borrowed from the library.
+      A <span style="border-left: 3px solid #6abf3a; padding-left: 0.4rem;">green accent</span>
+      marks books that were particularly memorable.
+    </p>
+  </header>
+
+  {% for year, sections in grouped %}
+  <div class="year-section" id="year-{{ year }}">
+    <span class="year-anchor">{{ year }}</span>
+
+    {% for period, books in sections %}
+    {% if period != year|string %}
+    <h2 class="period-heading">{{ period }}</h2>
+    {% endif %}
+
+    {% for book in books %}
+    <div class="book-card{% if book.lasting_impression %} lasting{% endif %}">
+
+      <div class="book-cover">
+        {% if book.cover_image %}
+        <img src="{{ book.cover_image }}" alt="Cover of {{ book.title }}" loading="lazy">
+        {% else %}
+        <span class="placeholder">{{ book.title[0] | upper }}</span>
+        {% endif %}
+      </div>
+
+      <div class="book-text">
+        <div class="book-title">
+          {{ book.title }}
+          {% if book.lasting_impression %}
+          <span class="lasting-badge">✦ memorable</span>
+          {% endif %}
+        </div>
+        <div class="book-author">{{ book.author }}</div>
+        <div class="book-review">
+          {% for para in book.review.split('\n\n') %}
+          <p>{{ para }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+    {% endfor %}
+
+  </div>
+  {% endfor %}
+
+  <footer class="site-footer">
+    Updated {{ updated }}
+  </footer>
+
+</div>
+</body>
+</html>
