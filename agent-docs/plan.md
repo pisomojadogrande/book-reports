@@ -54,21 +54,45 @@ reading/
 ## Implementation Checklist
 
 ### Phase 1: Setup
-- [ ] Create Python virtual environment
-- [ ] Install dependencies (`python-docx`, `Pillow`, `jinja2`, `requests`, `boto3`)
-- [ ] Create `requirements.txt`
+- [x] Create Python virtual environment
+- [x] Install dependencies (`python-docx`, `Pillow`, `jinja2`, `requests`, `boto3`)
+- [x] Create `requirements.txt`
 
 ### Phase 2: Parse & Convert the .docx
 
 **Script:** `src/parse_docx.py` — run once to bootstrap the project.
 
-- [ ] Walk document structure, identify all section headings (year and month/year)
-- [ ] Extract each book entry: title, author, review, year, month, lasting_impression flag
-- [ ] Extract all embedded PNG cover images to `images/covers/`
-- [ ] Normalize image sizes with Pillow at extraction time
-- [ ] Write all entries to `data/books.json`
-- [ ] Verify output: inspect `books.json` for correctness and completeness
-- [ ] Verify all cover images extracted and named consistently
+- [x] Walk document structure, identify all section headings (year and month/year)
+- [x] Extract each book entry: title, author, review, year, month, lasting_impression flag
+- [x] Extract all embedded PNG cover images to `images/covers/`
+- [x] Normalize image sizes with Pillow at extraction time
+- [x] Write all entries to `data/books.json`
+- [x] Verify output: inspect `books.json` for correctness and completeness
+- [x] Verify all cover images extracted and named consistently
+
+#### Known missing covers (deferred)
+
+11 books from 2022+ had their cover images land in section heading paragraphs during
+the Google Docs → .docx export (a float-layout artifact). They cannot be recovered
+from the .docx and will render as placeholder tiles until fixed manually.
+
+Fix each one with:
+```bash
+python src/add_book.py --fix-cover --title "..." [--cover-file ~/path/to/cover.jpg]
+```
+Or let the script auto-fetch from Open Library/Google Books.
+
+- [ ] Solutions and Other Problems — Allie Brosh (January 2025)
+- [ ] The Talented Mrs. Mandelbaum (December 2024)
+- [ ] Age of Revolutions (October 2024)
+- [ ] How Adam Smith Can Change Your Life (July 2024)
+- [ ] How To Know a Person (May 2024)
+- [ ] Going Infinite — Michael Lewis (March 2024)
+- [ ] Trust — Hernan Diaz (September 2023)
+- [ ] We Don't Know Ourselves (April 2023)
+- [ ] How the Other Half Eats (February 2023)
+- [ ] The Profiteers (September 2022)
+- [ ] Grasp (April 2022)
 
 The per-book JSON record shape:
 ```json
