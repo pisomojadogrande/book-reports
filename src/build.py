@@ -79,8 +79,10 @@ def main():
     SITE_DIR.mkdir(exist_ok=True)
     (SITE_DIR / "index.html").write_text(html, encoding="utf-8")
 
-    # Copy CSS
+    # Copy CSS and favicons
     shutil.copy(TEMPLATES_DIR / "style.css", SITE_DIR / "style.css")
+    shutil.copy(TEMPLATES_DIR / "favicon.png", SITE_DIR / "favicon.png")
+    shutil.copy(TEMPLATES_DIR / "favicon.svg", SITE_DIR / "favicon.svg")
 
     # Copy cover images
     if IMAGES_SRC.exists():

@@ -135,41 +135,40 @@ Design spec:
 
 #### Credentials
 - [x] IAM Identity Center already configured; `books-admin` and `books-ro` CLI profiles already set up
-- [ ] Verify profiles work: `aws sts get-caller-identity --profile books-ro`
+- [x] Verify profiles work: `aws sts get-caller-identity --profile books-ro`
 
 #### CDK Bootstrap (one-time)
-- [ ] `cdk bootstrap aws://ACCOUNT/us-east-1 --profile books-admin`
+- [x] `cdk bootstrap aws://ACCOUNT/us-east-1 --profile books-admin`
 
 #### Stack 1: CertStack (ACM certificate)
 - [x] Write `infra/cert_stack.py`
 - [x] Review with account owner
-- [ ] Deploy: `cdk deploy CertStack --profile books-admin`
-- [ ] Add ACM validation CNAME in Route53 account (walked through step by step)
-- [ ] Confirm certificate reaches `Issued` status in ACM console
+- [x] Deploy: `cdk deploy CertStack --profile books-admin`
+- [x] Add ACM validation CNAME in Route53 account (walked through step by step)
+- [x] Confirm certificate reaches `Issued` status in ACM console
 
 #### Stack 2: ReadingStack (S3 + CloudFront)
 - [x] Write `infra/reading_stack.py`: S3 bucket (account regional namespace), OAC, CloudFront distribution
 - [x] Review with account owner
-- [ ] Deploy: `cdk deploy ReadingStack --profile books-admin`
-- [ ] Confirm stack outputs: CloudFront domain name, S3 bucket name
+- [x] Deploy: `cdk deploy ReadingStack --profile books-admin`
+- [x] Confirm stack outputs: CloudFront domain name, S3 bucket name
 
 ### Phase 5: DNS
 
 **Action taken manually in the Route53 account (separate from content account).**
 
-- [ ] Receive CloudFront domain name from CDK stack output
-- [ ] Add CNAME record in Route53: `reading.example.com` → `<distribution>.cloudfront.net`, TTL 300
-- [ ] Confirm DNS propagation (`dig reading.example.com`)
-- [ ] Confirm site loads over HTTPS
+- [x] Receive CloudFront domain name from CDK stack output
+- [x] Add CNAME record in Route53: `books.example.com` → CloudFront domain, TTL 300
+- [x] Confirm site loads over HTTPS
 
 ### Phase 6: Deploy Script
 
 **Script:** `src/deploy.py`
 
-- [ ] Write deploy script: build → S3 sync (with correct Content-Type headers) → CloudFront invalidation
-- [ ] Test deploy with `--dry-run` flag first
-- [ ] Do first real deploy
-- [ ] Verify live site matches local preview
+- [x] Write deploy script: build → S3 sync (with correct Content-Type headers) → CloudFront invalidation
+- [x] Test deploy with `--dry-run` flag first
+- [x] Do first real deploy
+- [x] Verify live site matches local preview
 
 ### Phase 7: Minimal CMS — `add_book.py`
 

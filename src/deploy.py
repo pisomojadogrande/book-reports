@@ -35,7 +35,7 @@ CONTENT_TYPES = {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".ico": "image/x-icon",
-    ".svg": "image/svg+xml",
+    ".svg": "image/svg+xml; charset=utf-8",
     ".woff2": "font/woff2",
 }
 
