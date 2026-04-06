@@ -12,6 +12,7 @@ __pycache__/
 # CDK
 infra/cdk.out/
 infra/.cdk.staging/
+infra/.env
 
 # Misc
 .env

@@ -131,26 +131,27 @@ Design spec:
 
 ### Phase 4: AWS Infrastructure
 
-**Deployed via AWS CDK (Python). All mutating actions confirmed by the account owner before execution.**
+**Deployed via AWS CDK (Python). All mutating actions performed by the account owner; Claude verifies with `books-ro` profile.**
 
-#### Credentials (IAM Identity Center, not IAM Users)
-- [ ] Discuss and confirm IAM Identity Center setup with account owner
-- [ ] Enable IAM Identity Center in new AWS account
-- [ ] Create permission set with inline policy: `s3:PutObject`, `s3:DeleteObject`, `s3:ListBucket` + `cloudfront:CreateInvalidation`
-- [ ] Assign permission set to account owner's user
-- [ ] Configure local AWS CLI profile (`aws configure sso --profile reading`)
-- [ ] Verify: `aws sts get-caller-identity --profile reading`
+#### Credentials
+- [x] IAM Identity Center already configured; `books-admin` and `books-ro` CLI profiles already set up
+- [ ] Verify profiles work: `aws sts get-caller-identity --profile books-ro`
 
-#### CDK Stack
-- [ ] Write CDK stack (`infra/reading_stack.py`): S3 bucket, OAC, CloudFront distribution, ACM cert
-- [ ] Review CDK stack with account owner before deploying
-- [ ] Bootstrap CDK in account: `cdk bootstrap --profile reading`
-- [ ] Deploy stack: `cdk deploy --profile reading`
-- [ ] Note the CloudFront distribution domain name from stack outputs
+#### CDK Bootstrap (one-time)
+- [ ] `cdk bootstrap aws://ACCOUNT/us-east-1 --profile books-admin`
 
-#### ACM Certificate DNS Validation
-- [ ] Add validation CNAME record in Route53 account (walked through step by step)
+#### Stack 1: CertStack (ACM certificate)
+- [x] Write `infra/cert_stack.py`
+- [x] Review with account owner
+- [ ] Deploy: `cdk deploy CertStack --profile books-admin`
+- [ ] Add ACM validation CNAME in Route53 account (walked through step by step)
 - [ ] Confirm certificate reaches `Issued` status in ACM console
+
+#### Stack 2: ReadingStack (S3 + CloudFront)
+- [x] Write `infra/reading_stack.py`: S3 bucket (account regional namespace), OAC, CloudFront distribution
+- [x] Review with account owner
+- [ ] Deploy: `cdk deploy ReadingStack --profile books-admin`
+- [ ] Confirm stack outputs: CloudFront domain name, S3 bucket name
 
 ### Phase 5: DNS
 
