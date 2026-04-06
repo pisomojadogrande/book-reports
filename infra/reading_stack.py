@@ -37,9 +37,11 @@ class ReadingStack(cdk.Stack):
             enforce_ssl=True,
         )
 
-        # Escape hatch: add BucketNamespace (not yet in CDK L2)
+        # Escape hatch: add BucketNamespace (not yet in CDK L2).
+        # Must use add_override to patch the raw CloudFormation JSON —
+        # direct attribute assignment is silently ignored for unknown properties.
         cfn_bucket = bucket.node.default_child
-        cfn_bucket.bucket_namespace = "account-regional"
+        cfn_bucket.add_override("Properties.BucketNamespace", "account-regional")
 
         # ------------------------------------------------------------------
         # CloudFront Origin Access Control + distribution
