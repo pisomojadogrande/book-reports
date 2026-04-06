@@ -174,20 +174,25 @@ Design spec:
 
 **Script:** `src/add_book.py`
 
-- [ ] Implement CLI argument parsing (title, author, review/review-file, month, year, lasting-impression, no-cover, cover-file)
-- [ ] Implement Open Library cover search
-- [ ] Implement Google Books fallback
-- [ ] Implement local file fallback + placeholder
-- [ ] Implement books.json update (prepend new entry)
-- [ ] Implement post-add rebuild + optional deploy prompt
-- [ ] Test end-to-end with a real new book entry
+- [x] Implement CLI argument parsing (title, author, review/review-file, month, year, lasting-impression, no-cover, cover-file)
+- [x] Implement Open Library cover search
+- [x] Implement Google Books fallback
+- [x] Implement local file fallback + placeholder
+- [x] Implement books.json update (prepend new entry)
+- [x] Implement post-add rebuild + optional deploy
+- [x] Implement --fix-cover mode for patching existing books
+- [ ] **Test end-to-end with a real new book entry** ← DO THIS NEXT when you finish a book
 - [ ] Verify result on live site
 
+Note: `add_book.py` is written and documented but **not yet tested with real data**.
+Run `python src/add_book.py --help` for full usage. The first real book you add
+will be the end-to-end test.
+
 ### Phase 8: Smoke Test
-- [ ] Site loads at correct URL over HTTPS
-- [ ] All cover images display
-- [ ] Year navigation links work
-- [ ] Lasting-impression books visually distinct
+- [x] Site loads at correct URL over HTTPS
+- [ ] All cover images display (11 books still missing covers — use `--fix-cover`)
+- [x] Year navigation links work
+- [x] Lasting-impression books visually distinct
 - [ ] Site is readable on mobile
 - [ ] `add_book.py` round-trip works end-to-end
 
