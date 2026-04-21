@@ -221,13 +221,17 @@ body {
 /* Book deeplink button                                                */
 /* ------------------------------------------------------------------ */
 .book-link-btn {
-  display: inline-flex;
-  align-items: center;
+  -webkit-appearance: none;
+  appearance: none;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 0.25rem;
+  padding: 0 0.2rem;
   color: #bbb;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.85rem;
   vertical-align: middle;
   position: relative;
   top: -1px;
@@ -237,11 +241,6 @@ body {
 
 .book-link-btn:hover {
   color: #777;
-}
-
-.book-link-btn svg {
-  width: 13px;
-  height: 13px;
 }
 
 /* ------------------------------------------------------------------ */
