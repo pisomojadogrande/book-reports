@@ -6,6 +6,7 @@ Run:
 """
 
 import json
+import re
 import shutil
 from collections import defaultdict
 from datetime import date
@@ -25,6 +26,13 @@ MONTH_ORDER = {
     "May": 5, "June": 6, "July": 7, "August": 8,
     "September": 9, "October": 10, "November": 11, "December": 12,
 }
+
+
+def slugify(text):
+    text = text.lower()
+    text = re.sub(r"['\u2018\u2019\u201c\u201d]", "", text)
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+    return text.strip("-")
 
 
 def group_books(books):
@@ -66,6 +74,7 @@ def main():
 
     # Set up Jinja2
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
+    env.filters["slugify"] = slugify
     template = env.get_template("index.html.j2")
 
     # Render

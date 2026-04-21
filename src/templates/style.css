@@ -123,6 +123,7 @@ body {
   gap: 1.1rem;
   padding: 1.1rem 0;
   border-bottom: 1px solid #e8e4dc;
+  scroll-margin-top: 60px;
 }
 
 .book-card:last-child {
@@ -214,6 +215,65 @@ body {
   vertical-align: middle;
   position: relative;
   top: -1px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Book deeplink button                                                */
+/* ------------------------------------------------------------------ */
+.book-link-btn {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  color: #bbb;
+  opacity: 0;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  transition: opacity 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.book-title:hover .book-link-btn,
+.book-link-btn:focus-visible {
+  opacity: 1;
+}
+
+.book-link-btn:hover {
+  color: #777;
+}
+
+.book-link-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Link-copied toast                                                   */
+/* ------------------------------------------------------------------ */
+.link-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(0.4rem);
+  background: rgba(30, 30, 30, 0.88);
+  color: #fff;
+  font-size: 0.78rem;
+  font-family: 'Inter', sans-serif;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.18s, transform 0.18s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.link-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ------------------------------------------------------------------ */

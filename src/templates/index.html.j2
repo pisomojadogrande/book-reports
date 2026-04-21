@@ -38,7 +38,7 @@
     {% endif %}
 
     {% for book in books %}
-    <div class="book-card{% if book.lasting_impression %} lasting{% endif %}">
+    <div class="book-card{% if book.lasting_impression %} lasting{% endif %}" id="book-{{ book.title | slugify }}">
 
       <div class="book-cover">
         {% if book.cover_image %}
@@ -51,6 +51,9 @@
       <div class="book-text">
         <div class="book-title">
           {{ book.title }}
+          <button class="book-link-btn" onclick="copyBookLink('book-{{ book.title | slugify }}')" title="Copy link" aria-label="Copy link to {{ book.title }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
           {% if book.lasting_impression %}
           <span class="lasting-badge">✦ memorable</span>
           {% endif %}
@@ -75,5 +78,19 @@
   </footer>
 
 </div>
+
+<div id="link-toast" class="link-toast">Link copied</div>
+
+<script>
+function copyBookLink(id) {
+  var url = location.origin + location.pathname + '#' + id;
+  navigator.clipboard.writeText(url).then(function() {
+    var toast = document.getElementById('link-toast');
+    toast.classList.add('visible');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function() { toast.classList.remove('visible'); }, 1800);
+  });
+}
+</script>
 </body>
 </html>
