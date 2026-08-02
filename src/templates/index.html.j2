@@ -59,7 +59,7 @@
         <div class="book-author">{{ book.author }}</div>
         <div class="book-review">
           {% for para in book.review.split('\n\n') %}
-          <p>{{ para }}</p>
+          <p>{{ para | render_review }}</p>
           {% endfor %}
         </div>
       </div>

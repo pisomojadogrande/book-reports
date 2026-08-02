@@ -8,6 +8,7 @@ Run:
 import json
 import re
 import shutil
+from markupsafe import Markup, escape
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
@@ -26,6 +27,27 @@ MONTH_ORDER = {
     "May": 5, "June": 6, "July": 7, "August": 8,
     "September": 9, "October": 10, "November": 11, "December": 12,
 }
+
+
+_BOOK_TITLE_RE = re.compile(r'<book_title>(.*?)</book_title>', re.DOTALL)
+_URL_RE = re.compile(r'https?://\S+')
+
+
+def render_review(text):
+    """Process review paragraph: <book_title> → <em>, bare URLs → <a>."""
+    parts = _BOOK_TITLE_RE.split(text)
+    out = []
+    for i, part in enumerate(parts):
+        if i % 2 == 0:
+            escaped = str(escape(part))
+            escaped = _URL_RE.sub(
+                lambda m: f'<a href="{m.group()}" target="_blank" rel="noopener">{m.group()}</a>',
+                escaped,
+            )
+            out.append(escaped)
+        else:
+            out.append(f'<em>{escape(part)}</em>')
+    return Markup(''.join(out))
 
 
 def slugify(text):
@@ -75,6 +97,7 @@ def main():
     # Set up Jinja2
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
     env.filters["slugify"] = slugify
+    env.filters["render_review"] = render_review
     template = env.get_template("index.html.j2")
 
     # Render
