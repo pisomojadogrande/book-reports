@@ -34,6 +34,13 @@ infra/
 
 ## Setup
 
+You probably need these packages installed:
+```bash
+apt install zlib1g-dev libjpeg-dev python3-dev build-essential
+```
+
+And then
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
