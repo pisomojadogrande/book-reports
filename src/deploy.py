@@ -5,7 +5,7 @@ Reads bucket name and distribution ID from CloudFormation stack outputs so
 no AWS identifiers need to be hardcoded or stored in config files.
 
 Usage:
-    python src/deploy.py [--dry-run]
+    python src/deploy.py [--dry-run] [--full]
 
 Requirements:
     pip install boto3
@@ -13,6 +13,7 @@ Requirements:
 """
 
 import argparse
+import hashlib
 import mimetypes
 import subprocess
 import sys
@@ -62,7 +63,7 @@ def build_site():
     )
 
 
-def sync_to_s3(bucket_name, dry_run):
+def sync_to_s3(bucket_name, dry_run, full=False):
     session = boto3.Session(profile_name=PROFILE, region_name=REGION)
     s3 = session.client("s3", region_name=REGION)
 
@@ -72,10 +73,23 @@ def sync_to_s3(bucket_name, dry_run):
         if p.is_file()
     }
 
+    remote_etags = {}
+    if not full:
+        paginator = s3.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=bucket_name):
+            for obj in page.get("Contents", []):
+                remote_etags[obj["Key"]] = obj["ETag"].strip('"')
+
     print(f"\nSyncing {len(local_files)} files to s3://{bucket_name}/")
 
     for rel_path, abs_path in sorted(local_files.items()):
         key = rel_path.as_posix()
+        # Ordinary single-part S3 uploads have content MD5 ETags.
+        # Unknown or multipart ETags safely cause a fresh upload.
+        if not full and remote_etags.get(key) == hashlib.md5(abs_path.read_bytes()).hexdigest():
+            print(f"  SKIP {key} (unchanged)")
+            continue
+
         suffix = abs_path.suffix.lower()
         content_type = CONTENT_TYPES.get(suffix) or mimetypes.guess_type(str(abs_path))[0] or "application/octet-stream"
 
@@ -118,6 +132,7 @@ def invalidate_cloudfront(distribution_id, dry_run):
 def main():
     parser = argparse.ArgumentParser(description="Build and deploy the reading site.")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be uploaded without uploading")
+    parser.add_argument("--full", action="store_true", help="Re-upload every file, including unchanged files")
     args = parser.parse_args()
 
     print("Fetching stack outputs...")
@@ -140,7 +155,7 @@ def main():
     print(f"Distribution: {distribution_id}")
 
     build_site()
-    sync_to_s3(bucket_name, args.dry_run)
+    sync_to_s3(bucket_name, args.dry_run, full=args.full)
     invalidate_cloudfront(distribution_id, args.dry_run)
 
     if not args.dry_run:

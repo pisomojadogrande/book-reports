@@ -60,6 +60,10 @@ By default the script rebuilds the site locally but does not deploy. Add
 
     python src/add_book.py ... --deploy
 
+Only new or changed files are uploaded. To force a full re-upload:
+
+    python src/add_book.py ... --deploy --full
+
 Or rebuild and deploy separately:
 
     python src/build.py
@@ -303,7 +307,7 @@ def mode_fix_cover(args):
     save_books(books)
     log.info("books.json updated.")
 
-    rebuild_and_deploy(args.deploy)
+    rebuild_and_deploy(args.deploy or args.full, full=args.full)
 
 
 def mode_add_book(args):
@@ -369,17 +373,20 @@ def mode_add_book(args):
     log.info(f"  Cover:  {cover_value or 'none (placeholder)'}")
     log.info(f"  Lasting impression: {entry['lasting_impression']}")
 
-    rebuild_and_deploy(args.deploy)
+    rebuild_and_deploy(args.deploy or args.full, full=args.full)
 
 
-def rebuild_and_deploy(deploy: bool):
+def rebuild_and_deploy(deploy: bool, full: bool = False):
     log.info("\nRebuilding site...")
     subprocess.run([sys.executable, str(ROOT / "src" / "build.py")], check=True)
     log.info("Build complete.")
 
     if deploy:
         log.info("\nDeploying...")
-        subprocess.run([sys.executable, str(ROOT / "src" / "deploy.py")], check=True)
+        command = [sys.executable, str(ROOT / "src" / "deploy.py")]
+        if full:
+            command.append("--full")
+        subprocess.run(command, check=True)
     else:
         log.info("Run 'python src/deploy.py' to publish.")
 
@@ -476,8 +483,13 @@ def main():
         "--deploy", action="store_true",
         help=(
             "After rebuilding the site, sync to S3 and invalidate CloudFront. "
-            "Equivalent to running python src/deploy.py afterwards."
+            "Only new or changed files are uploaded."
         ),
+    )
+
+    parser.add_argument(
+        "--full", action="store_true",
+        help="Deploy and re-upload every file, including unchanged images (implies --deploy).",
     )
 
     args = parser.parse_args()

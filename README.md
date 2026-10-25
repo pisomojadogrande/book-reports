@@ -70,7 +70,7 @@ python src/add_book.py ... --cover-file ~/Downloads/cover.jpg
 python src/add_book.py --fix-cover --title "Going Infinite"
 ```
 
-`--deploy` rebuilds the site and pushes to S3 + CloudFront in one step. Without it, the site is rebuilt locally but not published.
+`--deploy` rebuilds the site and pushes only new or changed files to S3, then invalidates CloudFront. Unchanged covers are skipped. Add `--full` to force a complete re-upload (`python src/add_book.py ... --deploy --full`). Without it, the site is rebuilt locally but not published.
 
 See `python src/add_book.py --help` for the full reference.
 
@@ -82,6 +82,7 @@ See `python src/add_book.py --help` for the full reference.
 python src/build.py    # writes to site/
 python src/deploy.py   # syncs site/ to S3 and invalidates CloudFront
 python src/deploy.py --dry-run  # show what would be uploaded
+python src/deploy.py --full     # force re-upload of every file
 ```
 
 `deploy.py` reads the S3 bucket name and CloudFront distribution ID from CloudFormation stack outputs — no identifiers need to be hardcoded anywhere.
